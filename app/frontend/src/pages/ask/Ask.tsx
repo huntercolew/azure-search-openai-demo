@@ -19,6 +19,8 @@ import { TokenClaimsDisplay } from "../../components/TokenClaimsDisplay";
 import { LoginContext } from "../../loginContext";
 import { LanguagePicker } from "../../i18n/LanguagePicker";
 
+import waveUrl from "../../assets/FS_LOGO_stylizedWave.png";
+
 export function Component(): JSX.Element {
     const [isConfigPanelOpen, setIsConfigPanelOpen] = useState(false);
     const [promptTemplate, setPromptTemplate] = useState<string>("");
@@ -315,6 +317,9 @@ export function Component(): JSX.Element {
                     <SettingsButton className={styles.commandButton} onClick={() => setIsConfigPanelOpen(!isConfigPanelOpen)} />
                 </div>
                 <h1 className={styles.askTitle}>{t("askTitle")}</h1>
+                <div className={styles.logoWrapper}>
+                    <img src={waveUrl} alt="FedScale Wave" className={styles.waveLogo} />
+                </div>
                 <div className={styles.askQuestionInput}>
                     <QuestionInput
                         placeholder={t("multimodalExamples.placeholder")}

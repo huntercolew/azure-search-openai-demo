@@ -1,6 +1,16 @@
 const BACKEND_URI = "";
 
-import { ChatAppResponse, ChatAppResponseOrError, ChatAppRequest, Config, SimpleAPIResponse, HistoryListApiResponse, HistoryApiResponse } from "./models";
+import {
+    ChatAppResponse,
+    ChatAppResponseOrError,
+    ChatAppRequest,
+    Config,
+    SimpleAPIResponse,
+    HistoryListApiResponse,
+    HistoryApiResponse,
+    SearchResponse
+} from "./models";
+import { SearchRequest, SearchResult } from "./models";
 import { useLogin, getToken, isUsingAppServicesLogin } from "../authConfig";
 
 export async function getHeaders(idToken: string | undefined): Promise<Record<string, string>> {
@@ -52,6 +62,45 @@ export async function chatApi(request: ChatAppRequest, shouldStream: boolean, id
         headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify(request)
     });
+}
+
+// In api.ts
+/*
+export async function searchApi(request: SearchRequest, idToken: string | undefined): Promise<SearchResult> {
+    //DocumentSearchResult?
+    const headers = await getHeaders(idToken);
+    const response = await fetch(`${BACKEND_URI}/search`, {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify(request)
+    });
+
+    if (!response.ok) {
+        throw new Error(`Search request failed with status ${response.status}`);
+    }
+
+    return await response.json();
+}
+    */
+export async function searchApi(request: SearchRequest, idToken: string | undefined): Promise<SearchResponse> {
+    const headers = await getHeaders(idToken);
+    const response = await fetch(`${BACKEND_URI}/search`, {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify(request)
+    });
+
+    if (!response.ok) {
+        throw new Error(`Search request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+        results: data.value || [],
+        count: data["@odata.count"] || 0,
+        coverage: data["@search.coverage"],
+        query: request.query
+    };
 }
 
 export async function getSpeechApi(text: string): Promise<string | null> {

@@ -160,3 +160,62 @@ export type HistoryApiResponse = {
     entra_oid: string;
     answers: any;
 };
+
+// In models.ts
+export interface SearchRequest {
+    query: string;
+    top?: number;
+    filter?: string;
+    queryType?: "simple" | "semantic";
+    queryLanguage?: string;
+    semanticConfiguration?: string;
+}
+
+export interface SearchResult {
+    value: SearchDocument[];
+    "@odata.context"?: string;
+    "@odata.count"?: number;
+    "@search.coverage"?: number;
+}
+
+export interface SearchDocument {
+    id: string;
+    content: string;
+    category: string;
+    sourcefile: string;
+    sourcepage: string;
+    storageUrl: string;
+    // Add other fields as needed based on your search index schema
+}
+
+export type DocumentSearchResponse = {
+    message: ResponseMessage;
+    delta: ResponseMessage;
+    context: {
+        data_points: {
+            text: string[];
+            images: string[];
+            citations: string[];
+        };
+        followup_questions: string[];
+        thoughts: Array<{
+            title: string;
+            description: string;
+        }>;
+    };
+    session_state: null;
+    // Add any additional fields specific to document search
+    metadata?: {
+        resultCount?: number;
+        query?: string;
+        // Add any other metadata you want to include
+    };
+};
+
+export interface SearchResponse {
+    results: SearchDocument[];
+    count: number;
+    coverage?: number;
+    query?: string;
+    // Add pagination fields if needed
+}

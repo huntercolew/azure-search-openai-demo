@@ -4,9 +4,11 @@ import { useTranslation } from "react-i18next";
 import styles from "./Layout.module.css";
 
 import { useLogin } from "../../authConfig";
-
+import { Image } from "@fluentui/react";
 import { LoginButton } from "../../components/LoginButton";
 import { IconButton } from "@fluentui/react";
+
+import fsLogo from "../../assets/FS_LOGO_coName.png";
 
 const Layout = () => {
     const { t } = useTranslation();
@@ -39,10 +41,12 @@ const Layout = () => {
             <header className={styles.header} role={"banner"}>
                 <div className={styles.headerContainer} ref={menuRef}>
                     <Link to="/" className={styles.headerTitleContainer}>
+                        <Image src={fsLogo} alt="FedScale Logo" className={styles.headerLogo} height={32} />
                         <h3 className={styles.headerTitle}>{t("headerTitle")}</h3>
                     </Link>
                     <nav>
                         <ul className={`${styles.headerNavList} ${menuOpen ? styles.show : ""}`}>
+                            {/*
                             <li>
                                 <NavLink
                                     to="/"
@@ -52,6 +56,7 @@ const Layout = () => {
                                     {t("chat")}
                                 </NavLink>
                             </li>
+                            */}
                             <li>
                                 <NavLink
                                     to="/qa"
@@ -59,6 +64,15 @@ const Layout = () => {
                                     onClick={() => setMenuOpen(false)}
                                 >
                                     {t("qa")}
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink
+                                    to="/documentsearch"
+                                    className={({ isActive }) => (isActive ? styles.headerNavPageLinkActive : styles.headerNavPageLink)}
+                                    onClick={() => setMenuOpen(false)}
+                                >
+                                    {t("ds")}
                                 </NavLink>
                             </li>
                         </ul>

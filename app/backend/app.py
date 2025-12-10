@@ -222,6 +222,47 @@ async def format_as_ndjson(r: AsyncGenerator[dict, None]) -> AsyncGenerator[str,
         logging.exception("Exception while generating response stream: %s", error)
         yield json.dumps(error_dict(error))
 
+@bp.route("/search", methods=["POST"])
+@authenticated
+async def search(auth_claims: dict[str, Any]):
+    if not request.is_json:
+        return jsonify({"error": "request must be json"}), 415
+    
+    request_json = await request.get_json()
+    query = request_json.get("query")
+    top = request_json.get("top", 5)
+    filter_expression = request_json.get("filter")
+    query_type = request_json.get("queryType", "simple")
+    query_language = request_json.get("queryLanguage", "en-us")
+    semantic_config = request_json.get("semanticConfiguration", "default")
+
+    if not query:
+        return jsonify({"error": "query parameter is required"}), 400
+
+    try:
+        search_client = current_app.config[CONFIG_SEARCH_CLIENT]
+        
+        search_results = await search_client.search(
+            search_text=query,
+            filter=filter_expression,
+            top=top,
+            query_type=query_type,
+            query_language=query_language,
+            semantic_configuration_name=semantic_config if query_type == "semantic" else None
+        )
+        
+        results = []
+        async for result in search_results:
+            results.append(result)
+            
+        return jsonify({
+            "value": results,
+            "@odata.context": f"{request.base_url}$metadata#docs",
+            "@odata.count": len(results)
+        })
+        
+    except Exception as error:
+        return error_response(error, "/search")
 
 @bp.route("/chat", methods=["POST"])
 @authenticated
