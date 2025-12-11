@@ -38,8 +38,8 @@
 .documentSearchBottomSection {
     display: flex;
     flex: 1;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: row; /* Change to row layout */
+    justify-content: space-between; /* Space between search results and document viewer */
     width: 100%;
     margin-top: 1.5rem;
     gap: 2rem;
@@ -62,16 +62,52 @@
 }
 
 .documentSearchResults {
-    max-width: 50rem;
-    width: 100%;
-    margin: 0 auto;
+    flex: 1;
+    max-width: 100%; /* Take full width by default */
+    margin: 0;
     padding: 0 1rem;
+    transition: max-width 0.3s ease; /* Smooth transition */
 }
 
 .analysisPanel {
     width: 100%;
     max-width: 37.5rem;
     margin: 0 auto;
+}
+
+.documentViewerPanel {
+    flex: 1;
+    max-width: 50%;
+    background: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow: auto; /* Change from hidden to auto to allow scrolling */
+    height: 100%; /* Change from fixed height to 100% of parent */
+    position: relative; /* Change from sticky to relative */
+    display: flex;
+    flex-direction: column;
+}
+
+/* When document viewer is active */
+.documentViewerPanel:not(:empty) + .documentSearchResults {
+    max-width: 50%; /* Shrink to half when document is being viewed */
+}
+
+.documentViewerPanel:not(:empty) {
+    flex: 1;
+    max-width: 50%;
+    background: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    height: calc(100vh - 300px);
+    position: sticky;
+    top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Make sure the document viewer is hidden when not in use */
+.documentViewerPanel:empty {
+    display: none;
 }
 
 .settingsButton {

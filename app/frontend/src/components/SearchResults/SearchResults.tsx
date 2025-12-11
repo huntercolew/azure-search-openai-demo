@@ -1,20 +1,22 @@
 import React from "react";
-import { Stack, Text, Link, mergeStyleSets, getTheme, FontWeights, Spinner } from "@fluentui/react";
+import { Stack, Text, Link, mergeStyleSets, getTheme, FontWeights, Spinner, IconButton } from "@fluentui/react";
 import { SearchDocument } from "../../api/models";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 
 import styles from "./SearchResults.module.css";
+import { getCitationFilePath } from "../../api";
 
 interface SearchResultsProps {
     results: SearchDocument[];
     isLoading: boolean;
     error?: string;
     query?: string;
+    onDocumentClicked?: (filePath: string) => void;
 }
 
-export const SearchResults: React.FC<SearchResultsProps> = ({ results, isLoading, error, query }) => {
+export const SearchResults: React.FC<SearchResultsProps> = ({ results, isLoading, error, query, onDocumentClicked }) => {
     if (isLoading) {
         return (
             <div className={styles.loadingContainer}>
@@ -92,16 +94,54 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ results, isLoading
                                 <Stack.Item>
                                     {result.sourcefile && result.storageUrl && (
                                         <Text variant="large" className={styles.resultTitle}>
-                                            <Link href={result.storageUrl} target="_blank" rel="noopener noreferrer" className={styles.sourceLink}>
+                                            <Link
+                                                href={result.storageUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={styles.sourceLink}
+                                                onClick={e => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    const path = getCitationFilePath(result.sourcepage);
+                                                    if (onDocumentClicked) {
+                                                        onDocumentClicked(path);
+                                                    }
+                                                }}
+                                            >
                                                 {result.sourcefile.split("/").pop()?.split(".")[0] || "Document"}
                                             </Link>
                                         </Text>
                                     )}
                                 </Stack.Item>
                                 <Stack.Item>
-                                    <Text variant="medium" className={styles.fileExtension}>
-                                        {result.sourcefile?.split(".").pop()?.toUpperCase()}
-                                    </Text>
+                                    <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 4 }}>
+                                        {result.storageUrl && (
+                                            <IconButton
+                                                iconProps={{ iconName: "Download" }}
+                                                title="Download document"
+                                                ariaLabel="Download document"
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    window.open(result.storageUrl, "_blank");
+                                                }}
+                                                styles={{
+                                                    root: {
+                                                        padding: "0 4px",
+                                                        height: "24px",
+                                                        width: "24px",
+                                                        color: getTheme().palette.themePrimary
+                                                    },
+                                                    rootHovered: {
+                                                        backgroundColor: "transparent",
+                                                        color: getTheme().palette.themeDarker
+                                                    }
+                                                }}
+                                            />
+                                        )}
+                                        <Text variant="medium" className={styles.fileExtension}>
+                                            {result.sourcefile?.split(".").pop()?.toUpperCase()}
+                                        </Text>
+                                    </Stack>
                                 </Stack.Item>
                             </Stack>
 

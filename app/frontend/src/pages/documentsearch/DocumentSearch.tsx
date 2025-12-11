@@ -23,6 +23,8 @@ import { LanguagePicker } from "../../i18n/LanguagePicker";
 
 import waveUrl from "../../assets/FS_LOGO_stylizedWave.png";
 
+import { DocumentViewer } from "../../components/DocumentViewer";
+
 export function Component(): JSX.Element {
     const [isConfigPanelOpen, setIsConfigPanelOpen] = useState(false);
     const [promptTemplate, setPromptTemplate] = useState<string>("");
@@ -76,6 +78,8 @@ export function Component(): JSX.Element {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>();
     const [searchQuery, setSearchQuery] = useState<string>("");
+
+    const [activeDocument, setActiveDocument] = useState<string | undefined>(undefined);
 
     // For the Ask tab, this array will hold a maximum of one URL
     const [speechUrls, setSpeechUrls] = useState<(string | null)[]>([]);
@@ -303,6 +307,18 @@ export function Component(): JSX.Element {
         }
     };
 
+    // Add this handler
+    const onShowDocument = (document: string) => {
+        const documentUrl = document;
+        console.log("Document Clicked");
+
+        setActiveDocument(documentUrl);
+    };
+
+    const handleCloseDocumentViewer = () => {
+        setActiveDocument(undefined);
+    };
+
     const { t, i18n } = useTranslation();
 
     return (
@@ -331,7 +347,17 @@ export function Component(): JSX.Element {
             </div>
             <div className={styles.documentSearchBottomSection}>
                 <div className={styles.documentSearchResults}>
-                    <SearchResults results={searchResults} isLoading={isLoading} error={error} query={searchQuery} />
+                    <SearchResults results={searchResults} isLoading={isLoading} error={error} query={searchQuery} onDocumentClicked={x => onShowDocument(x)} />
+                </div>
+                <div className={`${styles.documentViewerPanel} ${!activeDocument ? styles.hidden : ""}`}>
+                    {activeDocument && (
+                        <DocumentViewer
+                            className={styles.documentViewerContent}
+                            activeDocument={activeDocument}
+                            documentHeight="600px"
+                            onDocumentClicked={onShowDocument}
+                        />
+                    )}
                 </div>
             </div>
 

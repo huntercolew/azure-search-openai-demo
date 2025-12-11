@@ -72,7 +72,8 @@
     "headerTexts":{
         "thoughtProcess": "Thought Process",
         "supportingContent": "Supporting Content",
-        "citation": "Citation"
+        "citation": "Citation",
+        "document": "Document"
     },
 
     "labels": {
