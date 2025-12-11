@@ -72,7 +72,7 @@ export function Component(): JSX.Element {
     const [answer, setAnswer] = useState<ChatAppResponse>();
     // For the Ask tab, this array will hold a maximum of one URL
     const [speechUrls, setSpeechUrls] = useState<(string | null)[]>([]);
-
+// No comments
     const speechConfig: SpeechConfig = {
         speechUrls,
         setSpeechUrls,
